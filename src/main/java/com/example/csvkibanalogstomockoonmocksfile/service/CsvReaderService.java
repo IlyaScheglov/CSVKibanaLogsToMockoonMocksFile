@@ -13,9 +13,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.BufferedReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,6 +28,7 @@ import java.util.stream.Collectors;
 public class CsvReaderService {
 
     private final ObjectMapper objectMapper;
+    private final MinioService minioService;
 
     @SneakyThrows
     public String readLogsFromCSV(MultipartFile inputFile, String outputPath, String name) {
@@ -110,16 +109,24 @@ public class CsvReaderService {
             rootNode = ((ObjectNode) rootNode).set("routes", objectMapper.valueToTree(routes));
             rootNode = ((ObjectNode) rootNode).set("rootChildren", objectMapper.valueToTree(childrens));
 
-            try (FileWriter fileWriter = new FileWriter(filePath)) {
-                objectMapper.writeValue(fileWriter, rootNode);
-            } catch (Exception e) {
-                throw new RuntimeException("Cannot save file because: " + e.getMessage());
-            }
+            return minioService.mapInputStreamToFileUrlInMinio(convertJsonNodeToInputStream(rootNode), name);
 
-            return "Good";
+//            try (FileWriter fileWriter = new FileWriter(filePath)) {
+//                objectMapper.writeValue(fileWriter, rootNode);
+//            } catch (Exception e) {
+//                throw new RuntimeException("Cannot save file because: " + e.getMessage());
+//            }
+
+//            return "Good";
         } catch (Exception e) {
             return "Bad";
         }
+    }
+
+    @SneakyThrows
+    private InputStream convertJsonNodeToInputStream(JsonNode node) {
+        var byteNode = objectMapper.writeValueAsString(node).getBytes(StandardCharsets.UTF_8);
+        return new ByteArrayInputStream(byteNode);
     }
 
     private MockoonRoute mapLogToMockoonRoute(CsvLogDto log) {

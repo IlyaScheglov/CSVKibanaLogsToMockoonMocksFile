@@ -13,9 +13,9 @@ public class CsvController {
 
     private final CsvReaderService csvReaderService;
 
-    @PostMapping(consumes = { "multipart/form-data" })
-    public ResponseEntity<String> getCsvLog(@RequestPart MultipartFile input, @RequestParam String output,
+    @PostMapping(consumes = "multipart/form-data")
+    public String getCsvLog(@RequestPart MultipartFile input, @RequestParam String output,
                                             @RequestParam String name) {
-        return ResponseEntity.ok(csvReaderService.readLogsFromCSV(input, output, name));
+        return csvReaderService.readLogsFromCSV(input, output, name);
     }
 }
