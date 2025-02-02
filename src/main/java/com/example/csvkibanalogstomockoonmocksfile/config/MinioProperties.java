@@ -1,17 +1,18 @@
 package com.example.csvkibanalogstomockoonmocksfile.config;
 
 import lombok.Data;
+import lombok.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Data
+@Value
 @ConfigurationProperties(prefix = "minio")
 public class MinioProperties {
 
-    private String minioUrl;
+    String minioUrl;
 
-    private String loginKey;
+    String loginKey;
 
-    private String passwordKey;
+    String passwordKey;
 
-    private String bucketName;
+    String bucketName;
 }

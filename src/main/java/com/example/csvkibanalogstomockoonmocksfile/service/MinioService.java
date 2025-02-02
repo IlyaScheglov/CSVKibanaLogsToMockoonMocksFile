@@ -24,7 +24,7 @@ public class MinioService {
             var bucketName = minioProperties.getBucketName();
             var fileName = UUID.randomUUID() + name + ".json";
             minioClient.putObject(PutObjectArgs.builder()
-                    .bucket(minioProperties.getBucketName()).object(fileName)
+                    .bucket(bucketName).object(fileName)
                     .stream(inputStream, -1, 10485760)
                     .contentType("json")
                     .build()
